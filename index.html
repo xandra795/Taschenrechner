@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<!-- Das hier sagt dem Browser: "Das ist eine HTML-Seite"-->
+<html lang="de">
+
+<head>
+  <!-- Im head-Bereich stehen Einstellungen, die man nicht direkt sieht -->
+  <meta charset="UTF-8" /> <!-- Damit Umlaute (ä, ö, ü) funktionieren -->
+  <title>Taschenrechner</title> <!-- Der Name im Browser-Tab -->
+
+  <style>
+    /* Hier kommt das Design (CSS) */
+
+    /* Die ganze Seite*/
+    body {
+      font-family: Arial, sans-serif; /* Schriftart */
+      display: flex;                  /* Zentriert den Inhalt */
+      justify-content: center;        /* Horizontal zentrieren */
+      align-items: center;            /* Vertikal zentrieren */
+      height: 100vh;                  /* Volle Fensterhöhe */
+      background-color: #f0f0f0;      /* Hellgrauer Hintergrund */
+      margin: 0;        
+    }
+
+    /* Die Taschenrechner-Box */
+    .rechner {
+      background-color: #ffffff;      /* Weißer Hintergrund */
+      border: 2px solid #cccccc;      /* Grauer Rahmen */
+      border-radius: 8px;             /* Abgerundete Ecken */
+      padding: 20px;                  /* Innenabstand */
+      width: 220px;
+    }
+
+    /* Das Anzeigefeld oben */
+    #anzeige {
+      width: 100%;
+      height: 50px;
+      font-size: 24px;
+      text-align: right;              /* Zahlen rechtsbündig */
+      border: 1px solid #aaaaaa;
+      border-radius: 4px;
+      padding: 0 8px;
+      margin-bottom: 12px;
+      background-color: #f9f9f9;
+      box-sizing: border-box;
+    }
+
+    /* Das Raster für die Buttons */
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);  /* 4 Spalten */
+      gap: 8px;                               /* Abstand zwischen Buttons */
+    }
+
+    /* Alle Buttons allgemein */
+    button {
+      padding: 14px;
+      font-size: 16px; 
+      border: 1px solid #bbbbbb;
+      border-radius: 4px;
+      background-color: #eeeeee;
+      cursor: pointer;               /* Mauszeiger wird zur Hand */
+    }
+
+    /* Wenn man den Mauszeiger drüberhält */
+    button:hover {
+      background-color: #dddddd;
+    }
+
+    /* Die Operator-Buttons (+, -, *, ÷) */
+    .op {
+      background-color: #dce8ff;    /* Leicht Blau */
+    }
+
+    /* Der Gleich-Button */
+    .gleich }
+      background-color: #4a90d9;     /* Blau */
+      color: white;   
+      font-weight: bold; 
+    }
+
+    .gleich:hover {
+      background-color: #357abd;
+    }
+
+    /* Der AC-Button (Alles löschen) */
+    .loeschen {
+      background-color: #ffd5d5;     /* Leicht Rot */
+    }
+
+    /* Der Null-Botton ist doppelt so breit */
+    .null {
+      grid-column: span 2; 
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Das ist der sichtbare Teil der Seite -->
+  <div class="rechner">
+
+    <!-- Das Anzeigefeld - hier erscheinen die Zahlen -->
+    <input type="text" id="anzeige" value="0" readonly />
+    <!-- "readonly" bedeutet: man kann nicht direkt reintippen -->
+
+    <!-- Die Buttons in einem Raster -->
+    <div class="buttons">
+
+      <!-- Zeile 1 -->
+      <button class="loeschen" onclick="allesLoeschen()">AC</button>
+      <button class="op" onclick="eingabe('/')">÷</button>
+      <button class="op" onclick="eingabe('*')">·</button>
+      <button class="op" onclick="eingabe('-')">-</button>
+
+      <!-- Zeile 2 -->
+      <button onclick="eingabe('7')">7</button>
+      <button onclick="eingabe('8')">8</button>
+      <button onclick="eingabe('9')">9</button>
+      <button class="op" onclick="eingabe('+')">+</button>
+
+      <!-- Zeile 3 -->
+      <button onclick="eingabe('4')">4</button>
+      <button onclick="eingabe('5')">5</button>
+      <button onclick="eingabe('6')">6</button>
+
+      <!-- Der Gleich-Button geht über 2 Zeilen -->
+      <button class="gleich" style="grid-row: span 2;" onclick="berechnen()">=</button>
+
+      <!-- Zeile 4 -->
+      <button onclick="eingabe('1')">1</button>
+      <button onclick="eingabe('2')">2</button>
+      <button onclick="eingabe('3')">3</button>
+
+      <!-- Zeile 5 -->
+      <button class="null" onclick="eingabe('0')">0</button>
+      <button onclick="eingabe('.')">.</button>
+
+    </div>
+  </div>
+
+  <script>
+    // Hier kommt die Logik (JavaScript) 
+
+    // Diese Variable merkt sich, was gerade angezeigt wird
+    let ausdruck = '';
+
+    // Diese Funktion wird aufgerufen wenn man eine Taste drückt
+    function eingabe(wert) {
+      // Hole das Anzeigefeld
+      let anzeige = document.getElementById('anzeige');
+
+      // Wenn die Anzeige gerade "0" oder "Fehler" zeigt, neu anfangen
+      if (anzeige.value === '0' || anzeige.value === 'Fehler') {
+        ausdruck = '';
+      }
+
+      // Den gedrückten Wert hinzufügen
+      ausdruck += wert;
+
+      // Im Anzeigefeld anzeigen
+      anzeige.value = ausdruck;
+    }
+
+    // Diese Funktion berechnet das Ergebnis (wird beim "=" aufgerufen)
+    function berechnen() {
+      let anzeige = document.getElementById('anzeige');
+
+      try {
+        //eval() rechnet den Ausdruck aus, z.B."3+4" wird zu 7
+        let ergebnis = eval(ausdruck);
+
+        // Ergebnis anzeigen
+        anzeige.value = ergebnis;
+
+        // Ausdruck auf das Ergebnis setzen (für weitere Rechnung)
+        ausdruck = String(ergebnis);
+
+      } catch (fehler) {
+        // Falls etwas schiefläuft (z.B: "3+" ohne zweite Zahl)
+        anzeige.value = 'Fehler';
+        ausdruck = '';
+      }
+    }
+
+    // Diese Funktion löscht alles (wird beim "AC" aufgerufen)
+    function allesLoeschen() {
+      ausdruck = '';
+      document.getElementById('anzeige').value = '0';
+    }
+
+  </script>
+
+</body>
+</html>
+    
